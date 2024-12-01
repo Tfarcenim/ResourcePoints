@@ -1,36 +1,34 @@
 package tfar.resourcepoints.network.client;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import tfar.nations3.client.ClientPacketHandler;
-import tfar.nations3.world.TownInfo;
+import net.minecraft.world.item.Item;
+import tfar.resourcepoints.ResourcePoints;
 
 public class S2CResourcePointsValuesPacket implements S2CModPacket {
 
-    public final int containerId;
-    public final int index;
-    public final TownInfo value;
+    public final Object2IntMap<Item> values;
 
-    public S2CResourcePointsValuesPacket(int pContainerId, int pIndex, TownInfo pValue) {
-        this.containerId = pContainerId;
-        this.index = pIndex;
-        this.value = pValue;
+    public S2CResourcePointsValuesPacket(Object2IntMap<Item> values) {
+        this.values = values;
     }
 
     public S2CResourcePointsValuesPacket(FriendlyByteBuf buf) {
-        containerId = buf.readInt();
-        index = buf.readInt();
-        value = TownInfo.fromPacket(buf);
+        values = buf.readMap(Object2IntOpenHashMap::new,buf1 -> buf1.readById(BuiltInRegistries.ITEM), FriendlyByteBuf::readInt);
     }
 
     @Override
     public void handleClient() {
-        ClientPacketHandler.handleTownInfoPacket(this);
+        if (!Minecraft.getInstance().isLocalServer()) {
+            ResourcePoints.RESOURCE_POINTS = values;
+        }
     }
 
     @Override
     public void write(FriendlyByteBuf to) {
-        to.writeInt(containerId);
-        to.writeInt(index);
-        value.toPacket(to);
+        to.writeMap(values,(buf, item) -> buf.writeId(BuiltInRegistries.ITEM,item), FriendlyByteBuf::writeInt);
     }
 }

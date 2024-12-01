@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tfar.resourcepoints.network.PacketHandler;
+import tfar.resourcepoints.network.client.S2CResourcePointsValuesPacket;
 import tfar.resourcepoints.platform.Services;
 
 // This class is part of the common project meaning it is shared between all supported loaders. Code written here can only
@@ -36,8 +37,12 @@ public class ResourcePoints {
 
     }
 
+    public static void syncToAll(MinecraftServer server) {
+        server.getPlayerList().getPlayers().forEach(ResourcePoints::sync);
+    }
+
     public static void sync(ServerPlayer player) {
-        Services.PLATFORM.sendToClient(S2CConfigPacket.create(RESOURCE_POINTS),player);
+        Services.PLATFORM.sendToClient(new S2CResourcePointsValuesPacket(RESOURCE_POINTS),player);
     }
 
     public static ResourceLocation id(String key) {

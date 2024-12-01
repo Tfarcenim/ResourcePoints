@@ -1,19 +1,16 @@
 package tfar.resourcepoints.network;
 
 import net.minecraft.resources.ResourceLocation;
-import tfar.nations3.Nations3;
-import tfar.nations3.network.client.S2CTownInfoPacket;
-import tfar.nations3.network.server.C2SClaimChunk;
-import tfar.nations3.platform.Services;
 import tfar.resourcepoints.ResourcePoints;
+import tfar.resourcepoints.network.client.S2CResourcePointsValuesPacket;
+import tfar.resourcepoints.platform.Services;
 
 import java.util.Locale;
 
 public class PacketHandler {
 
     public static void registerPackets() {
-        Services.PLATFORM.registerServerPacket(C2SClaimChunk.class, C2SClaimChunk::new);
-        Services.PLATFORM.registerClientPacket(S2CTownInfoPacket.class, S2CTownInfoPacket::new);
+        Services.PLATFORM.registerClientPacket(S2CResourcePointsValuesPacket.class, S2CResourcePointsValuesPacket::new);
 
     }
 

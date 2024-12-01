@@ -1,7 +1,6 @@
 package tfar.resourcepoints;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
@@ -9,26 +8,17 @@ import com.google.gson.stream.JsonWriter;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tfar.resourcepoints.platform.Services;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 public class ConfigHandler {
 
@@ -37,7 +27,8 @@ public class ConfigHandler {
 
     static JsonObject createDefault() {
         JsonObject root = new JsonObject();
-
+        root.addProperty("cobblestone",1);
+        root.addProperty("oak_log",4);
         return root;
     }
 
@@ -79,40 +70,44 @@ public class ConfigHandler {
 
     public static void writeIfEmpty() {
         if (!file.exists()) {
-            write(file);
+            write(file,createDefault());
         }
     }
 
-    public static void write(File file) {
+    public static void save() {
+        JsonObject jsonObject = new JsonObject();
+
+        for (Map.Entry<Item,Integer> entry : ResourcePoints.RESOURCE_POINTS.object2IntEntrySet()) {
+            jsonObject.addProperty(BuiltInRegistries.ITEM.getKey(entry.getKey()).toString(),entry.getValue());
+        }
+
+
         Gson gson = new Gson();
         JsonWriter writer = null;
         try {
             writer = gson.newJsonWriter(new FileWriter(file));
             writer.setIndent("    ");
-            gson.toJson(createDefault(), writer);
+            gson.toJson(jsonObject, writer);
         } catch (Exception e) {
             LOGGER.error("Couldn't save config");
-            e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(writer);
         }
     }
 
-    public static String getName(Item item) {
-        return BuiltInRegistries.ITEM.getKey(item).toString();
+    public static void write(File file,JsonObject jsonObject) {
+        Gson gson = new Gson();
+        JsonWriter writer = null;
+        try {
+            writer = gson.newJsonWriter(new FileWriter(file));
+            writer.setIndent("    ");
+            gson.toJson(jsonObject, writer);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't save config");
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
     }
-
-    public static Item getItem(String s) {
-        return BuiltInRegistries.ITEM.get(ResourceLocation.parse(s));
-    }
-
-    public static String getName(Holder<Attribute> attribute) {
-        return attribute.getRegisteredName();
-    }
-
-    public static Holder<Attribute> getAttribute(String s) {
-        return BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.parse(s)).orElseThrow();
-    }
-
 }
