@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "resourcepoints:block/deposit_terminal"
+    }
+  }
+}

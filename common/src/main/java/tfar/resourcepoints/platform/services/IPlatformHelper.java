@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 public interface IPlatformHelper {
@@ -72,5 +73,6 @@ public interface IPlatformHelper {
     <MSG extends C2SModPacket> void registerServerPacket(Class<MSG> packetLocation, Function<FriendlyByteBuf,MSG> reader);
     void sendToClient(S2CModPacket msg, ServerPlayer player);
     void sendToServer(C2SModPacket msg);
+    String getLastKnownUserName(UUID uuid);
 
 }

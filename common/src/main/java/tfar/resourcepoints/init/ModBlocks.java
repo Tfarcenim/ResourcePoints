@@ -9,12 +9,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import tfar.resourcepoints.block.DepositTerminalBlock;
 
 public class ModBlocks {
-    public static final Block DEPOSIT_TERMINAL = new DepositTerminalBlock(BlockBehaviour.Properties.of().strength(-1.0F, 3600000.0F).noLootTable().isValidSpawn(ModBlocks::never));
+    public static final Block DEPOSIT_TERMINAL = new DepositTerminalBlock(BlockBehaviour.Properties.of().strength(-1.0F, 3600000.0F).isValidSpawn(ModBlocks::never));
 
 
 
 
-    private static Boolean never(BlockState $$0, BlockGetter $$1, BlockPos $$2, EntityType<?> $$3) {
+    private static boolean never(BlockState $$0, BlockGetter $$1, BlockPos $$2, EntityType<?> $$3) {
         return false;
     }
 }
